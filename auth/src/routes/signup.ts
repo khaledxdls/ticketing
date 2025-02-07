@@ -14,18 +14,14 @@ router.post(
       .withMessage("Password must be between 4 and 20 characters"),
   ],
   async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        throw new RequestValidationError(errors.array());
-      }
-      const { email, password } = req.body;
-      console.log("Creating a users account...");
-      throw new DatabaseValidationError(errors.array());
-      res.send({});
-    } catch (err) {
-      next(err); // Pass error to error handling middleware
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw new RequestValidationError(errors.array());
     }
+    const { email, password } = req.body;
+    console.log("Creating a users account...");
+    throw new DatabaseValidationError();
+    res.send({});
   }
 );
 
