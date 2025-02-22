@@ -8,9 +8,16 @@ import { signoutRouter } from "./routes/signout";
 import { signupRouter } from "./routes/signup";
 import { errorHandler } from "./middlewares/error-handlers";
 import { NotFoundError } from "./errors/not-found";
-
+import cookies from "cookie-session";
 const app = express();
+app.set("trust proxy", true);
 app.use(json());
+app.use(
+  cookies({
+    signed: false,
+    secure: true,
+  })
+);
 app.use(currentUserRouter);
 app.use(signinRouter);
 app.use(signoutRouter);
@@ -30,6 +37,9 @@ app.use(
 );
 
 const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY must be defined");
+  }
   try {
     await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
     console.log("Connected to MongoDB");
@@ -37,7 +47,7 @@ const start = async () => {
     console.error(err);
   }
   app.listen(5000, () => {
-    console.log("Listening on port 5000");
+    console.log("Listening on port 5000 sddddd");
   });
 };
 
