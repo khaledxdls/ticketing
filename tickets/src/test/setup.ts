@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 
 declare global {
   var signin: () => string[];
+  var generateId: () => string;
 }
 let mongo: any;
 
@@ -37,7 +38,7 @@ afterAll(async () => {
 global.signin = () => {
   // Build a JWT payload. { id, email }
   const payload = {
-    id: "1",
+    id: generateId(),
     email: "khaled@gmail.com",
   };
   // Create the JWT!
@@ -50,4 +51,8 @@ global.signin = () => {
   const base64 = Buffer.from(sessionJSON).toString("base64");
   // return a string thats the cookie with the encoded data
   return [`session=${base64}`];
+};
+
+global.generateId = () => {
+  return new mongoose.Types.ObjectId().toHexString();
 };
