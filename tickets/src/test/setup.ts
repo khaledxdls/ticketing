@@ -8,6 +8,7 @@ declare global {
   var signin: () => string[];
   var generateId: () => string;
 }
+jest.mock("../nets-wrapper");
 let mongo: any;
 
 beforeAll(async () => {
@@ -19,6 +20,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  jest.clearAllMocks();
   if (mongoose.connection.db) {
     const collections = await mongoose.connection.db.collections();
 

@@ -20,7 +20,7 @@ const start = async () => {
   }
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to MongoDB for tickets");
+    console.log("Connected to MongoDB for orders");
 
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID!,
