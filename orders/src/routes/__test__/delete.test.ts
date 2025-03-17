@@ -16,6 +16,7 @@ it("returns a 404 if the order is not found", async () => {
 
 it("returns a 401 if the user does not own the order", async () => {
   const ticket = Ticket.build({
+    id: global.generateId(),
     title: "concert",
     price: 20,
   });
@@ -38,6 +39,7 @@ it("returns a 401 if the user does not own the order", async () => {
 
 it("marks an order as cancelled", async () => {
   const ticket = Ticket.build({
+    id: global.generateId(),
     title: "concert",
     price: 20,
   });
@@ -63,6 +65,7 @@ it("marks an order as cancelled", async () => {
 
 it("emits an order cancelled event", async () => {
   const ticket = Ticket.build({
+    id: global.generateId(),
     title: "concert",
     price: 20,
   });
