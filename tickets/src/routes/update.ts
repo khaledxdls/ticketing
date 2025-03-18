@@ -6,6 +6,7 @@ import {
   validateRequest,
   NotFoundError,
   NotAuthorizedError,
+  BadRequestError,
 } from "@khaleddlala/common";
 import { ticketUpdatedPublisher } from "../events/publishers/tickets-updated-publisher";
 import { natsWrapper } from "../nets-wrapper";
@@ -27,6 +28,9 @@ router.put(
 
     if (!ticket) {
       throw new NotFoundError();
+    }
+    if (ticket.orderId) {
+      throw new BadRequestError("Cannot edit a reserved ticket");
     }
 
     if (ticket.userId !== req.currentUser!.id) {
