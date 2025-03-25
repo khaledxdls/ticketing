@@ -12,6 +12,9 @@ import {
 import { Order } from "../models/order";
 import { OrderStatus } from "@khaleddlala/common";
 import { stripe } from "../../stripe";
+import { Payments } from "../models/payments";
+import { PaymentsCreatedPublisher } from "../events/publishers/payments-created-publisher";
+import { natsWrapper } from "../nets-wrapper";
 
 const router = express.Router();
 
@@ -39,11 +42,24 @@ router.post(
     if (order.status === OrderStatus.Cancelled) {
       throw new BadRequestError("Order is already cancelled");
     }
-    await stripe.charges.create({
+    const charge = await stripe.charges.create({
       currency: "usd",
       amount: order.price * 100,
       source: token,
       description: "Charge for an order",
+    });
+
+    const payment = Payments.build({
+      orderId,
+      stripeId: charge.id,
+    });
+
+    await payment.save();
+
+    new PaymentsCreatedPublisher(natsWrapper.client).publish({
+      id: payment.id,
+      orderId: payment.orderId,
+      stripeId: payment.stripeId,
     });
 
     res.status(201).send({ success: true });
