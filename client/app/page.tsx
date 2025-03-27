@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-
-// /d:/Learning/Microservices with Node JS and React/ticketing/client/app/page.tsx
+import Link from "next/link";
+import React from "react";
+import { getTickets } from "./_lib/auth/actions";
 
 interface Ticket {
   id: string;
@@ -8,22 +8,8 @@ interface Ticket {
   price: number;
 }
 
-const HomePage = () => {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const response = await fetch("/api/tickets"); // Replace with your API endpoint
-        const data = await response.json();
-        setTickets(data);
-      } catch (error) {
-        console.error("Error fetching tickets:", error);
-      }
-    };
-
-    fetchTickets();
-  }, []);
+const HomePage = async () => {
+  const tickets: Ticket[] = await getTickets();
 
   return (
     <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100">
@@ -43,7 +29,7 @@ const HomePage = () => {
               ${ticket.price.toFixed(2)}
             </p>
             <button className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300">
-              View Details
+              <Link href={`/tickets/${ticket.id}`}>View Ticket</Link>
             </button>
           </li>
         ))}

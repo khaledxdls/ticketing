@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getCurrentUser } from "./_lib/auth/actions";
 import Header from "./_components/Header";
+import { UserContext } from "./_context/userContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,10 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
+type user = {
+  id: string;
+  email: string;
+} | null;
 export const metadata: Metadata = {
   title: "Ticketing App",
   description: "Buy and sell tickets for your favorite events",

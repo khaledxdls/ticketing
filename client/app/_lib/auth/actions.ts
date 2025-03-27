@@ -50,3 +50,68 @@ export async function isAuthenticated() {
   const user = await getCurrentUser();
   return user !== null;
 }
+
+export async function getTickets() {
+  try {
+    const response = await axios.get(
+      "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/tickets",
+      {
+        headers: {
+          host: "ticketing.dev",
+        },
+
+        validateStatus: () => true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tickets:", error);
+    return [];
+  }
+}
+
+export async function getTicket(ticketId: string) {
+  try {
+    const response = await axios.get(
+      `http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/tickets/${ticketId}`,
+      {
+        headers: {
+          host: "ticketing.dev",
+        },
+        validateStatus: () => true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching ticket:", error);
+    return null;
+  }
+}
+
+export async function getOrders() {
+  try {
+    const cookieStore = await cookies();
+    const allCookies = cookieStore
+      .getAll()
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join("; ");
+    const response = await axios.get(
+      "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/orders",
+      {
+        headers: {
+          host: "ticketing.dev",
+          Cookie: allCookies,
+        },
+
+        validateStatus: () => true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return [];
+  }
+}

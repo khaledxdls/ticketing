@@ -42,16 +42,17 @@ router.post(
     if (order.status === OrderStatus.Cancelled) {
       throw new BadRequestError("Order is already cancelled");
     }
-    const charge = await stripe.charges.create({
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: order.price * 100, // Convert to cents
       currency: "usd",
-      amount: order.price * 100,
-      source: token,
-      description: "Charge for an order",
+      payment_method: token, // Use the token as the payment method
+      confirm: true, // Automatically confirm the payment
+      return_url: "https://www.ticketing-app.dev/orders", // Redirect to this URL after payment
     });
 
     const payment = Payments.build({
       orderId,
-      stripeId: charge.id,
+      stripeId: paymentIntent.id,
     });
 
     await payment.save();
