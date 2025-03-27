@@ -8,8 +8,12 @@ import { Payments } from "../../models/payments";
 jest.mock("../../../stripe", () => {
   return {
     stripe: {
-      charges: {
-        create: jest.fn().mockResolvedValue({}),
+      paymentIntents: {
+        create: jest.fn().mockResolvedValue({
+          id: "pi_12345",
+          status: "succeeded",
+          client_secret: "secret_12345",
+        }),
       },
     },
   };
@@ -83,12 +87,13 @@ it("return 201 with valid inputs", async () => {
     })
     .expect(201)
     .then(async (response) => {
-      expect(stripe.charges.create).toHaveBeenCalled();
-      const chargeOptions = (stripe.charges.create as jest.Mock).mock
-        .calls[0][0];
-      expect(chargeOptions.source).toEqual("tok_visa");
-      expect(chargeOptions.amount).toEqual(20 * 100);
-      expect(chargeOptions.currency).toEqual("usd");
+      expect(stripe.paymentIntents.create).toHaveBeenCalled();
+      const paymentIntentOptions = (stripe.paymentIntents.create as jest.Mock)
+        .mock.calls[0][0];
+      expect(paymentIntentOptions.payment_method).toEqual("tok_visa");
+      expect(paymentIntentOptions.amount).toEqual(20 * 100);
+      expect(paymentIntentOptions.currency).toEqual("usd");
+      expect(paymentIntentOptions.confirm).toBe(true);
 
       const payment = await Payments.findOne({
         orderId: order.id,
